@@ -52,15 +52,24 @@ class Contato{
         }
     }
 
+   
+
     public function atualizar($id, $nome, $email, $senha){
-        $sql = "UPDATE usuarios SET nome = :nome, email = :email, senha = :senha WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':id', $id);
-        $stmt->bindValue(':nome', $nome);
-        $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':senha', $senha);
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
+        try {
+            $sql = "UPDATE usuarios SET nome = :nome, email = :email, senha = :senha WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':id', $id);
+            $stmt->bindValue(':nome', $nome);
+            $stmt->bindValue(':email', $email);
+            $stmt->bindValue(':senha', $senha);
+            $stmt->execute();
+            
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            // Para depuração - remova em produção
+            echo "Erro: " . $e->getMessage();
+            return false;
+        }
     }
     
     function chkUser($email){
@@ -119,6 +128,21 @@ class Contato{
         $stmt->execute();
 
         return $stmt->fetchAll();
+    }
+
+    public function getById($id){
+        $sql = "SELECT * FROM usuarios WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        
+       
+        
+        if($stmt->rowCount() > 0){
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            return false;
+        }
     }
 
 }
